@@ -3,6 +3,7 @@ import asyncio
 import time
 from typing import List, Dict, Any, Union, Optional
 from datetime import datetime
+from deepeval.models import LiteLLMModel
 
 # DeepEval imports
 from deepeval import evaluate
@@ -319,7 +320,12 @@ class DeepEvalService:
         
         # Add model parameter if provided
         if metric_request.model:
-            common_params["model"] = metric_request.model
+            common_params["model"] = LiteLLMModel(
+                model=f"openai/{metric_request.model}",
+                api_key=settings.openai_api_key,
+                base_url="https://litellm.s.studiumdigitale.uni-frankfurt.de/v1",
+                temperature=0
+            )
         
         # Metric-specific parameters
         if metric_type == MetricType.FAITHFULNESS:
