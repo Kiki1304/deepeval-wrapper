@@ -323,11 +323,8 @@ class DeepEvalService:
             common_params["model"] = LiteLLMModel(
                 model=f"openai/{metric_request.model}",
                 api_key=os.getenv("LITELLM_API_KEY"),
-                base_url=os.getenv(
-                    "LITELLM_API_BASE",
-                    "https://litellm.s.studiumdigitale.uni-frankfurt.de/v1"
-                ),
-                temperature=0,
+                base_url="https://litellm.s.studiumdigitale.uni-frankfurt.de/v1",
+                temperature=0
             )
         
         # Metric-specific parameters
