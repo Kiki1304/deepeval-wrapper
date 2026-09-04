@@ -19,3 +19,4 @@ deepeval==3.4.1
 
 # Basic utilities
 requests>=2.31.0
+litellm
