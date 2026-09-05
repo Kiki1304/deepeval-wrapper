@@ -410,7 +410,12 @@ class DeepEvalService:
             if metric_request.threshold is not None:
                 g_eval_params["threshold"] = metric_request.threshold
             if metric_request.model:
-                g_eval_params["model"] = metric_request.model
+                g_eval_params["model"] = LiteLLMModel(
+                    model=f"openai/{metric_request.model}",
+                    api_key=os.getenv("LITELLM_API_KEY"),
+                    base_url="https://litellm.s.studiumdigitale.uni-frankfurt.de/v1",
+                    temperature=0
+                )
             if metric_request.async_mode is not None:
                 g_eval_params["async_mode"] = metric_request.async_mode
             if metric_request.strict_mode is not None:
