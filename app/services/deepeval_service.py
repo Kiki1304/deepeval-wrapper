@@ -387,7 +387,10 @@ class DeepEvalService:
                 default_params = [TurnParams.CONTENT, TurnParams.ROLE]
                 g_eval_params["evaluation_params"] = evaluation_params or default_params
             else:
-                g_eval_params["evaluation_params"] = evaluation_params or [LLMTestCaseParams.ACTUAL_OUTPUT, LLMTestCaseParams.EXPECTED_OUTPUT]
+                g_eval_params["evaluation_params"] = evaluation_params or [
+                    LLMTestCaseParams.INPUT,
+                    LLMTestCaseParams.ACTUAL_OUTPUT
+                ]
             
             # Add either criteria or evaluation_steps (mutually exclusive)
             if metric_request.criteria:
