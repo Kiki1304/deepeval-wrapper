@@ -22,7 +22,7 @@ class CerebrasModel(DeepEvalBaseLLM):
 
         super().__init__(model=model)
 
-    def load_model(self):
+    def load_model(self, *args, **kwargs):
         return OpenAI(
             api_key=self.api_key,
             base_url="https://api.cerebras.ai/v1",
