@@ -3,7 +3,70 @@ import asyncio
 import time
 from typing import List, Dict, Any, Union, Optional
 from datetime import datetime
-from deepeval.models import LiteLLMModel
+from deepeval.models import DeepEvalBaseLLM
+from openai import OpenAI
+
+class CerebrasModel(DeepEvalBaseLLM):
+    def __init__(
+        self,
+        model: str = "gpt-oss-120b",
+        api_key: Optional[str] = None,
+        temperature: float = 0,
+    ):
+        self.model_name = model
+        self.api_key = api_key or os.getenv("CEREBRAS_API_KEY")
+        self.temperature = temperature
+
+        if not self.api_key:
+            raise ValueError("CEREBRAS_API_KEY is not configured")
+
+        super().__init__(model=model)
+
+    def load_model(self):
+        return OpenAI(
+            api_key=self.api_key,
+            base_url="https://api.cerebras.ai/v1",
+        )
+
+    def generate(self, prompt: str, schema=None):
+        client = self.load_model()
+
+        kwargs = {
+            "model": self.model_name,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": self.temperature,
+        }
+
+        if schema is not None:
+            schema_dict = (
+                schema.model_json_schema()
+                if hasattr(schema, "model_json_schema")
+                else schema.schema()
+            )
+            kwargs["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": schema.__name__,
+                    "schema": schema_dict,
+                    "strict": True,
+                },
+            }
+
+        response = client.chat.completions.create(**kwargs)
+        content = response.choices[0].message.content
+
+        if schema is not None:
+            if hasattr(schema, "model_validate_json"):
+                return schema.model_validate_json(content)
+            return schema.parse_raw(content)
+
+        return content
+
+    async def a_generate(self, prompt: str, schema=None):
+        return await asyncio.to_thread(self.generate, prompt, schema)
+
+    def get_model_name(self):
+        return self.model_name
 
 # DeepEval imports
 from deepeval import evaluate
@@ -414,11 +477,10 @@ class DeepEvalService:
                 g_eval_params["threshold"] = metric_request.threshold
             
             if metric_request.model:
-                g_eval_params["model"] = LiteLLMModel(
-                    model=f"openai/{metric_request.model}",
-                    api_key=os.getenv("LITELLM_API_KEY"),
-                    base_url="https://litellm.s.studiumdigitale.uni-frankfurt.de/v1",
-                    temperature=0
+                g_eval_params["model"] = CerebrasModel(
+                    model="gpt-oss-120b",
+                    api_key=os.getenv("CEREBRAS_API_KEY"),
+                    temperature=0,
                 )
 
             if metric_request.async_mode is not None:
