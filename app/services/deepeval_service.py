@@ -383,10 +383,9 @@ class DeepEvalService:
         
         # Add model parameter if provided
         if metric_request.model:
-            common_params["model"] = LiteLLMModel(
-                model=f"openai/{metric_request.model}",
-                api_key=os.getenv("LITELLM_API_KEY"),
-                base_url="https://litellm.s.studiumdigitale.uni-frankfurt.de/v1",
+            common_params["model"] = CerebrasModel(
+                model="gpt-oss-120b",
+                api_key=os.getenv("CEREBRAS_API_KEY"),
                 temperature=0
             )
         
