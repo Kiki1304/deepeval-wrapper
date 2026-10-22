@@ -43,6 +43,19 @@ class CerebrasModel(DeepEvalBaseLLM):
                 if hasattr(schema, "model_json_schema")
                 else schema.schema()
             )
+
+            def fix_schema(obj):
+                if isinstance(obj, dict):
+                    if obj.get("type") == "object":
+                        obj["additionalProperties"] = False
+                    for value in obj.values():
+                        fix_schema(value)
+                elif isinstance(obj, list):
+                    for item in obj:
+                        fix_schema(item)
+
+            fix_schema(schema_dict)
+
             kwargs["response_format"] = {
                 "type": "json_schema",
                 "json_schema": {
@@ -51,7 +64,14 @@ class CerebrasModel(DeepEvalBaseLLM):
                     "strict": True,
                 },
             }
-        print("CEREBRAS DEBUG:", repr(self.model_name), type(self.model_name), repr(kwargs.get("model")))
+
+        print(
+            "CEREBRAS DEBUG:",
+            repr(self.model_name),
+            type(self.model_name),
+            repr(kwargs.get("model")),
+        )
+
         response = client.chat.completions.create(**kwargs)
         content = response.choices[0].message.content
 
