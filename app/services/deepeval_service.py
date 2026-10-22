@@ -13,7 +13,6 @@ class CerebrasModel(DeepEvalBaseLLM):
         api_key: Optional[str] = None,
         temperature: float = 0,
     ):
-        self.model_name = model
         self.api_key = api_key or os.getenv("CEREBRAS_API_KEY")
         self.temperature = temperature
 
@@ -21,6 +20,7 @@ class CerebrasModel(DeepEvalBaseLLM):
             raise ValueError("CEREBRAS_API_KEY is not configured")
 
         super().__init__(model=model)
+        self.model_name = model
 
     def load_model(self, *args, **kwargs):
         return OpenAI(
