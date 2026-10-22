@@ -51,7 +51,7 @@ class CerebrasModel(DeepEvalBaseLLM):
                     "strict": True,
                 },
             }
-
+        print("CEREBRAS DEBUG:", repr(self.model_name), type(self.model_name), repr(kwargs.get("model")))
         response = client.chat.completions.create(**kwargs)
         content = response.choices[0].message.content
 
