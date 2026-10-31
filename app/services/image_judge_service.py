@@ -13,7 +13,7 @@ async def evaluate_image(image_bytes: bytes, content_type: str, description: str
 
     model = os.getenv(
         "OPENROUTER_VISION_MODEL",
-        "google/gemma-3-27b-it:free"
+        "google/gemma-3-27b-it"
     )
 
     client = AsyncOpenAI(
