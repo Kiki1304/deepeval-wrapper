@@ -14,6 +14,7 @@ from .api import (
     metrics_router,
     jobs_router,
     health_router,
+    image_evaluation_router,
 )
 
 # Configure logging
@@ -105,6 +106,7 @@ app.include_router(auth_router)
 app.include_router(evaluation_router)
 app.include_router(metrics_router)
 app.include_router(jobs_router)
+app.include_router(image_evaluation_router)
 
 
 # Root endpoint
