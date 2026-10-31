@@ -71,13 +71,21 @@ async def evaluate_image(image_bytes: bytes, content_type: str, description: str
     if not result_text:
         raise ValueError("The image model returned an empty response")
 
-    result = json.loads(result_text)
+result_text = result_text.strip()
 
-    score = float(result["score"])
-    reason = str(result["reason"])
+start = result_text.find("{")
+end = result_text.rfind("}")
 
-    if not 0 <= score <= 1:
-        raise ValueError("The returned score must be between 0 and 1")
+if start == -1 or end == -1:
+    raise ValueError(f"No JSON found in model response: {result_text[:500]!r}")
+
+result = json.loads(result_text[start:end + 1])
+
+score = float(result["score"])
+reason = str(result["reason"])
+
+if not 0 <= score <= 1:
+    raise ValueError("The returned score must be between 0 and 1")
 
     return {
         "score": score,
