@@ -39,6 +39,9 @@ class CerebrasModel(DeepEvalBaseLLM):
             "temperature": self.temperature,
         }
 
+        if self.reasoning_effort is not None:
+            kwargs["reasoning_effort"] = self.reasoning_effort
+
         if schema is not None:
             schema_dict = (
                 schema.model_json_schema()
