@@ -12,9 +12,11 @@ class CerebrasModel(DeepEvalBaseLLM):
         model: str = "gpt-oss-120b",
         api_key: Optional[str] = None,
         temperature: float = 0,
+        reasoning_effort: Optional[str] = None,
     ):
         self.api_key = api_key or os.getenv("CEREBRAS_API_KEY")
         self.temperature = temperature
+        self.reasoning_effort = reasoning_effort
 
         if not self.api_key:
             raise ValueError("CEREBRAS_API_KEY is not configured")
