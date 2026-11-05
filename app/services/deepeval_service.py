@@ -7,20 +7,22 @@ from deepeval.models import DeepEvalBaseLLM
 from openai import OpenAI
 
 class CerebrasModel(DeepEvalBaseLLM):
-    def __init__(
-        self,
-        model: str = "gpt-oss-120b",
-        api_key: Optional[str] = None,
-        temperature: float = 0,
-    ):
-        self.api_key = api_key or os.getenv("CEREBRAS_API_KEY")
-        self.temperature = temperature
+def __init__(
+    self,
+    model: str = "gpt-oss-120b",
+    api_key: Optional[str] = None,
+    temperature: float = 0,
+    reasoning_effort: Optional[str] = None,
+):
+    self.api_key = api_key or os.getenv("CEREBRAS_API_KEY")
+    self.temperature = temperature
+    self.reasoning_effort = reasoning_effort
 
-        if not self.api_key:
-            raise ValueError("CEREBRAS_API_KEY is not configured")
+    if not self.api_key:
+        raise ValueError("CEREBRAS_API_KEY is not configured")
 
-        super().__init__(model=model)
-        self.model_name = model
+    super().__init__(model=model)
+    self.model_name = model
 
     def load_model(self, *args, **kwargs):
         return OpenAI(
