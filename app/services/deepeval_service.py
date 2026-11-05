@@ -77,6 +77,11 @@ class CerebrasModel(DeepEvalBaseLLM):
             repr(kwargs.get("model")),
         )
 
+        print(
+            f"[Cerebras Request] Model: {kwargs.get('model')}, "
+            f"Reasoning Effort: {kwargs.get('reasoning_effort', 'default')}"
+        )
+        
         response = client.chat.completions.create(**kwargs)
         content = response.choices[0].message.content
 
