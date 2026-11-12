@@ -510,7 +510,6 @@ class DeepEvalService:
                     model="gpt-oss-120b",
                     api_key=os.getenv("CEREBRAS_API_KEY"),
                     temperature=0,
-                    reasoning_effort="high",
                 )
 
             if metric_request.async_mode is not None:
