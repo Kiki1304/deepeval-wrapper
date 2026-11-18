@@ -1,7 +1,8 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status, Depends
 
 from ..services.image_judge_service import evaluate_image
-
+from ..services.image_helpfulness_service import evaluate_image_helpfulness
+from ..auth import get_current_user
 
 router = APIRouter(prefix="/evaluate-image", tags=["Image Evaluation"])
 
@@ -56,3 +57,39 @@ async def evaluate_uploaded_image(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Image evaluation failed: {str(e)}"
         )
+
+
+@router.post("/helpfulness/")
+async def evaluate_uploaded_image_helpfulness(
+    image: UploadFile = File(...),
+    description: str = Form(...),
+    current_user=Depends(get_current_user)
+):
+    allowed_types = ["image/jpeg", "image/png", "image/webp"]
+
+    if image.content_type not in allowed_types:
+        raise HTTPException(400, "Unsupported image format")
+
+    image_bytes = await image.read(10 * 1024 * 1024 + 1)
+
+    if not image_bytes:
+        raise HTTPException(400, "The uploaded image is empty")
+
+    if len(image_bytes) > 10 * 1024 * 1024:
+        raise HTTPException(413, "Maximum image size is 10 MB")
+
+    if not description.strip():
+        raise HTTPException(400, "Description must not be empty")
+
+    try:
+        return await evaluate_image_helpfulness(
+            image_bytes,
+            image.content_type,
+            description
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail="Image helpfulness evaluation failed"
+        )
+
